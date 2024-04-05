@@ -201,7 +201,10 @@ public class HidHostService extends ProfileService {
                     break;
                 case MESSAGE_DISCONNECT: {
                         BluetoothDevice device = (BluetoothDevice) msg.obj;
-                        if (!mNativeInterface.disconnectHid(getByteAddress(device))) {
+                        int connectionPolicy = getConnectionPolicy(device);
+                        boolean reconnectAllowed =
+                            connectionPolicy == BluetoothProfile.CONNECTION_POLICY_ALLOWED;
+                        if (!mNativeInterface.disconnectHid(getByteAddress(device), reconnectAllowed)) {
                             broadcastConnectionState(device, BluetoothProfile.STATE_DISCONNECTING);
                             broadcastConnectionState(device, BluetoothProfile.STATE_DISCONNECTED);
                             break;
