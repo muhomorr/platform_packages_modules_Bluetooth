@@ -24,6 +24,7 @@ import android.annotation.RequiresNoPermission;
 import android.annotation.RequiresPermission;
 import android.annotation.SuppressLint;
 import android.annotation.SystemApi;
+import android.app.compat.gms.GmsCompat;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattServer;
@@ -505,6 +506,13 @@ public final class BluetoothLeAdvertiser {
         BluetoothLeUtils.checkAdapterStateOn(mBluetoothAdapter);
         if (callback == null) {
             throw new IllegalArgumentException("callback cannot be null");
+        }
+
+        if (GmsCompat.isEnabled()) {
+            if (gattServer != null && !GmsCompat.hasPermission(android.Manifest.permission.BLUETOOTH_PRIVILEGED)) {
+                Log.d("GmsCompat", "ignored BluetoothGattServer", new Throwable());
+                gattServer = null;
+            }
         }
 
         boolean isConnectable = parameters.isConnectable();
