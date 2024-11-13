@@ -197,7 +197,10 @@ class BluetoothServiceBinder extends IBluetoothManager.Stub {
             return null;
         }
 
-        if (mContext.checkCallingOrSelfPermission(LOCAL_MAC_ADDRESS) != PERMISSION_GRANTED) {
+        if (mContext.checkCallingOrSelfPermission(LOCAL_MAC_ADDRESS) != PERMISSION_GRANTED
+                // wired Android Auto doesn't ask for full LOCAL_MAC_ADDRESS permission but needs
+                // the Bluetooth adapter hardware address for pairing to hands-free audio car system
+                && !isPrivilegedAndroidAuto(Binder.getCallingPid(), Binder.getCallingUid())) {
             // TODO(b/280890575): Throws a SecurityException instead
             Log.w(TAG, "getAddress(): Client does not have LOCAL_MAC_ADDRESS permission");
             return BluetoothAdapter.DEFAULT_MAC_ADDRESS;
