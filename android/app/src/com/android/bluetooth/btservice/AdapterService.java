@@ -2863,13 +2863,8 @@ public class AdapterService extends Service {
                 return false;
             }
 
-            try {
-                service.enforceCallingOrSelfPermission(MODIFY_PHONE_STATE, null);
-                service.enforceCallingOrSelfPermission(BLUETOOTH_PRIVILEGED, null);
-            } catch (SecurityException e) {
-                /* see android.bluetooth.BluetoothAdapter#setActiveDevice */
-                Utils.enforceBluetoothPrivilegedAndroidAutoOrThrow(service, e);
-            }
+            service.enforceCallingOrSelfPermission(MODIFY_PHONE_STATE, null);
+            service.enforceCallingOrSelfPermission(BLUETOOTH_PRIVILEGED, null);
 
             Log.i(
                     TAG,
@@ -3796,7 +3791,13 @@ public class AdapterService extends Service {
                 return false;
             }
 
-            service.enforceCallingOrSelfPermission(BLUETOOTH_PRIVILEGED, null);
+            try {
+                service.enforceCallingOrSelfPermission(BLUETOOTH_PRIVILEGED, null);
+            } catch (SecurityException e) {
+                /* see android.bluetooth.BluetoothDevice#setMetadata */
+                Utils.enforceBluetoothPrivilegedAndroidAutoOrThrow(service, e);
+            }
+
             return service.setMetadata(device, key, value);
         }
 
